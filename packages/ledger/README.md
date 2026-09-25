@@ -24,14 +24,14 @@ Amounts are integers: minor units (cents) for money, whole points for points. Ne
 
 ## Operations
 
-| Method           | Type                | Entries                                                |
-| ---------------- | ------------------- | ------------------------------------------------------ |
-| `topUp`          | `top_up` (+ `bonus_credit`) | paid_funds ↑, topups_received ↓ (bonus: bonus_funds ↑, bonus_issued ↓) |
-| `cashTopUp`      | `cash_top_up`       | paid_funds ↑, cash_received ↓                          |
-| `charge`         | `payment`           | bonus/paid ↓ per tenant spend order, sales_redeemed ↑; optional points ↑, points_issued ↓ |
-| `redeemPoints`   | `reward_redemption` | points ↓, points_redeemed ↑                            |
-| `void`, `refund` | `void`, `refund`    | exact mirror of the original; one reversal per original |
-| `adjust`         | `manual_adjustment` | customer account ±, adjustments ∓; reason required     |
+| Method           | Type                        | Entries                                                                                   |
+| ---------------- | --------------------------- | ----------------------------------------------------------------------------------------- |
+| `topUp`          | `top_up` (+ `bonus_credit`) | paid_funds ↑, topups_received ↓ (bonus: bonus_funds ↑, bonus_issued ↓)                    |
+| `cashTopUp`      | `cash_top_up`               | paid_funds ↑, cash_received ↓                                                             |
+| `charge`         | `payment`                   | bonus/paid ↓ per tenant spend order, sales_redeemed ↑; optional points ↑, points_issued ↓ |
+| `redeemPoints`   | `reward_redemption`         | points ↓, points_redeemed ↑                                                               |
+| `void`, `refund` | `void`, `refund`            | exact mirror of the original; one reversal per original                                   |
+| `adjust`         | `manual_adjustment`         | customer account ±, adjustments ∓; reason required                                        |
 
 Gift card types exist in the enum; their API arrives in M5.
 

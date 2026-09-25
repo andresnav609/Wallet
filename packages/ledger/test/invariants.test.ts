@@ -25,7 +25,12 @@ afterAll(async () => {
 describe('double-entry invariants', () => {
   it('every API write produces entries that sum to zero per unit', async () => {
     const base = { tenantId: f.tenantId, customerId: f.customerId, actor };
-    await f.ledger.topUp({ ...base, idempotencyKey: f.key('topup'), amountMinor: 5000, bonusMinor: 500 });
+    await f.ledger.topUp({
+      ...base,
+      idempotencyKey: f.key('topup'),
+      amountMinor: 5000,
+      bonusMinor: 500,
+    });
     await f.ledger.cashTopUp({ ...base, idempotencyKey: f.key('cash'), amountMinor: 1000 });
     const payment = await f.ledger.charge({
       ...base,

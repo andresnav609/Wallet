@@ -37,9 +37,9 @@ describe('spend order (per-tenant configuration)', () => {
       amountMinor: 1000,
     });
     expect(result.allocation).toEqual({ bonusMinor: 500, paidMinor: 500 });
-    expect(await bonusFirst.ledger.getBalances(bonusFirst.tenantId, bonusFirst.customerId)).toMatchObject(
-      { paidMinor: 4500, bonusMinor: 0 },
-    );
+    expect(
+      await bonusFirst.ledger.getBalances(bonusFirst.tenantId, bonusFirst.customerId),
+    ).toMatchObject({ paidMinor: 4500, bonusMinor: 0 });
   });
 
   it('paid_first consumes paid funds before bonus funds', async () => {
@@ -52,9 +52,9 @@ describe('spend order (per-tenant configuration)', () => {
       amountMinor: 1000,
     });
     expect(result.allocation).toEqual({ bonusMinor: 0, paidMinor: 1000 });
-    expect(await paidFirst.ledger.getBalances(paidFirst.tenantId, paidFirst.customerId)).toMatchObject(
-      { paidMinor: 4000, bonusMinor: 500 },
-    );
+    expect(
+      await paidFirst.ledger.getBalances(paidFirst.tenantId, paidFirst.customerId),
+    ).toMatchObject({ paidMinor: 4000, bonusMinor: 500 });
   });
 
   it('paid_first falls back to bonus when paid funds run out', async () => {
@@ -66,9 +66,9 @@ describe('spend order (per-tenant configuration)', () => {
       amountMinor: 4200,
     });
     expect(result.allocation).toEqual({ bonusMinor: 200, paidMinor: 4000 });
-    expect(await paidFirst.ledger.getBalances(paidFirst.tenantId, paidFirst.customerId)).toMatchObject(
-      { paidMinor: 0, bonusMinor: 300, totalMinor: 300 },
-    );
+    expect(
+      await paidFirst.ledger.getBalances(paidFirst.tenantId, paidFirst.customerId),
+    ).toMatchObject({ paidMinor: 0, bonusMinor: 300, totalMinor: 300 });
   });
 
   it('a replayed charge reports the original allocation', async () => {

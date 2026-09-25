@@ -1,7 +1,7 @@
 {
   "name": "wallet-platform",
   "private": true,
-  "packageManager": "pnpm@10.17.1",
+  "packageManager": "pnpm@12.6.0",
   "engines": {
     "node": ">=22"
   },
@@ -17,12 +17,12 @@
     "format:check": "prettier --check ."
   },
   "devDependencies": {
-    "@types/node": "^22.10.0",
+    "@types/node": "^24.0.0",
     "@wallet/db": "workspace:*",
     "@wallet/ledger": "workspace:*",
-    "prettier": "^3.4.2",
-    "tsx": "^4.19.2",
-    "turbo": "^2.3.3",
-    "typescript": "^5.7.2"
+    "prettier": "^3.9.0",
+    "tsx": "^4.23.0",
+    "turbo": "^2.11.0",
+    "typescript": "^5.9.0"
   }
 }

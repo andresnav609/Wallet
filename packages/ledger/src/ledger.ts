@@ -436,7 +436,9 @@ class LedgerImpl implements Ledger {
         const customer = await this.customerAccounts(client, tenant, input.customerId);
         const tenantAccounts = await this.tenantAccounts(client, tenant);
         const counterpart =
-          input.account === 'points' ? tenantAccounts.points_adjustments : tenantAccounts.adjustments;
+          input.account === 'points'
+            ? tenantAccounts.points_adjustments
+            : tenantAccounts.adjustments;
 
         const transactionId = await this.insertTransaction(client, {
           tenantId: input.tenantId,

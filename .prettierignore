@@ -2,3 +2,6 @@ node_modules
 pnpm-lock.yaml
 .turbo
 dist
+# Hand-written product docs keep their own formatting
+CLAUDE.md
+docs/

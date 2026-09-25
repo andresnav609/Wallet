@@ -74,9 +74,9 @@ describe('idempotency', () => {
     await expect(f.ledger.topUp({ ...base, amountMinor: 200 })).rejects.toBeInstanceOf(
       IdempotencyConflictError,
     );
-    await expect(
-      f.ledger.charge({ ...base, amountMinor: 100 }),
-    ).rejects.toBeInstanceOf(IdempotencyConflictError);
+    await expect(f.ledger.charge({ ...base, amountMinor: 100 })).rejects.toBeInstanceOf(
+      IdempotencyConflictError,
+    );
     expect((await f.ledger.getBalances(f.tenantId, customer)).paidMinor).toBe(100);
   });
 

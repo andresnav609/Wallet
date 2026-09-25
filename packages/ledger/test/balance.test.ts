@@ -130,9 +130,10 @@ describe('cached balances are derived and verifiable', () => {
     });
     const accounts = await accountIds(f, customer);
     // Only the owner can do this, and only by hand — which is the point.
-    await f.db.admin.query('update ledger_balances set balance = balance + 1 where account_id = $1', [
-      accounts.paid_funds,
-    ]);
+    await f.db.admin.query(
+      'update ledger_balances set balance = balance + 1 where account_id = $1',
+      [accounts.paid_funds],
+    );
     expect(await f.ledger.verifyBalances(f.tenantId)).toEqual([
       { accountId: accounts.paid_funds, cached: 701, computed: 700 },
     ]);

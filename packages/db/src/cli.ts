@@ -20,7 +20,11 @@ async function main(): Promise<void> {
       throw new Error(`unknown command "${command}" (expected: setup | migrate)`);
     }
     const applied = await migrate(pool, { log: console.log });
-    console.log(applied.length === 0 ? 'migrations: nothing to apply' : `migrations: applied ${applied.length}`);
+    console.log(
+      applied.length === 0
+        ? 'migrations: nothing to apply'
+        : `migrations: applied ${applied.length}`,
+    );
   } finally {
     await pool.end();
   }

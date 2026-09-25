@@ -26,7 +26,11 @@ describe('migrations', () => {
   });
 
   it('created both application roles without superuser or bypassrls', async () => {
-    const roles = await db.admin.query<{ rolname: string; rolsuper: boolean; rolbypassrls: boolean }>(
+    const roles = await db.admin.query<{
+      rolname: string;
+      rolsuper: boolean;
+      rolbypassrls: boolean;
+    }>(
       `select rolname, rolsuper, rolbypassrls from pg_roles
        where rolname in ('wallet_app', 'wallet_ledger') order by rolname`,
     );

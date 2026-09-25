@@ -1,13 +1,7 @@
 // Seeds the "Demo Club" tenant with realistic activity for sales demos.
 // Idempotent: every ledger write uses a fixed idempotency key, so re-running
 // changes nothing. Run with `pnpm db:seed` after `pnpm db:setup`.
-import {
-  LEDGER_ROLE,
-  connectionUrlForRole,
-  createPool,
-  loadEnv,
-  requireEnv,
-} from '@wallet/db';
+import { LEDGER_ROLE, connectionUrlForRole, createPool, loadEnv, requireEnv } from '@wallet/db';
 import { createLedger, type Actor } from '@wallet/ledger';
 
 const DEMO = {

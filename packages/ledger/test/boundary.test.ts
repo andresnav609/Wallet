@@ -105,7 +105,9 @@ describe('database privileges', () => {
       f.db.admin.query('delete from ledger_entries where transaction_id = $1', [paymentId]),
     ).rejects.toSatisfy(immutable);
     await expect(
-      f.db.admin.query(`update ledger_transactions set reason = 'edited' where id = $1`, [paymentId]),
+      f.db.admin.query(`update ledger_transactions set reason = 'edited' where id = $1`, [
+        paymentId,
+      ]),
     ).rejects.toSatisfy(immutable);
     await expect(
       f.db.admin.query('delete from ledger_transactions where id = $1', [paymentId]),
