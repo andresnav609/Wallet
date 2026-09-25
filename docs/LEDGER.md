@@ -34,3 +34,11 @@ Top-up, bonus credit, payment, reward redemption, void, refund, manual adjustmen
 - Duplicate webhook or duplicate charge request creates only one transaction
 - A void/refund exactly reverses the original
 - No code path outside `packages/ledger` can write money movements
+
+## Implemented in M1 (see `packages/ledger/README.md`)
+
+- Chart of accounts: customer `paid_funds`, `bonus_funds`, `points`; tenant `topups_received`, `cash_received`, `bonus_issued`, `sales_redeemed`, `refunds_paid`, `adjustments`, `gift_cards_outstanding`, `points_issued`, `points_redeemed`, `points_adjustments`.
+- Currency: ISO 4217 code per tenant and per money account; amounts are `bigint` minor units. One transaction balances per unit and never mixes currencies (enforced by the database).
+- Sign convention: customer accounts positive = owed to the customer; tenant counterpart accounts may go negative. Sum of customer money balances = the client's liability.
+- Balances: `ledger_balances` is a trigger-maintained cache with a `CHECK (balance >= 0)` for customers; `verifyBalances` recomputes from entries and reports drift.
+- Idempotency: `(tenant_id, idempotency_key)` is unique; a reused key with a different request is rejected.

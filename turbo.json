@@ -1,0 +1,13 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "tasks": {
+    "test": {
+      "dependsOn": ["^test"],
+      "cache": false,
+      "env": ["DATABASE_ADMIN_URL", "WALLET_APP_PASSWORD", "WALLET_LEDGER_PASSWORD"]
+    },
+    "typecheck": {
+      "dependsOn": ["^typecheck"]
+    }
+  }
+}

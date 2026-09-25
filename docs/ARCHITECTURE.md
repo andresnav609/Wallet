@@ -55,3 +55,8 @@ Each adapter has an interface, a mock, and one or more real implementations.
 - Money settles to the client's accounts; we never hold funds.
 - Balances never expire.
 - Start on Supabase Pro + Vercel; keep portable.
+- (M1) Apps reach the database only through our server-side code, never from the browser. Row-level security keys off a transaction-local setting (`set_config('app.tenant_id', …, true)` read by `app.current_tenant()`), not on any auth provider's JWT claims, so the auth provider and host can change without touching policies.
+- (M1) Two database roles: `wallet_app` (RLS-bound, read-only on ledger tables) and `wallet_ledger` (RLS-bound, the only role that can insert ledger rows; only `packages/ledger` receives its credential). Nobody can update or delete ledger rows.
+- (M1) Money is stored as `bigint` minor units with an ISO 4217 currency code on each tenant and each money account. Entries of one transaction sum to zero per unit (money, points) and all money entries share one currency. Points are whole integers; rates and rounding are tenant configuration (M5).
+- (M1) Spend order (`bonus_first` default, or `paid_first`) is a column on `tenants`. The ledger allocates a charge accordingly; other policies (void window, limits, tiers) live in `core`/apps, the ledger stays policy-free.
+- (M1) Migrations are plain SQL files in `supabase/migrations/` (Supabase CLI naming) applied by our own runner to any PostgreSQL; local dev and CI use `postgres:16` in Docker.
