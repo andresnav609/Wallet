@@ -1,0 +1,5 @@
+# Keep LF in the repo and in working copies on every OS (prettier and CI expect LF).
+* text=auto eol=lf
+*.png binary
+*.jpg binary
+*.ico binary
