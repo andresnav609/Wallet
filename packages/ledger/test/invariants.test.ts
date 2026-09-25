@@ -39,13 +39,22 @@ describe('double-entry invariants', () => {
       pointsEarned: 12,
     });
     await f.ledger.redeemPoints({ ...base, idempotencyKey: f.key('redeem'), points: 5 });
+    // Void a second payment (one whose points were not redeemed yet); voiding
+    // `payment` here would rightly fail, its points are partly spent.
+    const second = await f.ledger.charge({
+      ...base,
+      idempotencyKey: f.key('charge'),
+      amountMinor: 300,
+      pointsEarned: 3,
+    });
     await f.ledger.void({
       tenantId: f.tenantId,
       idempotencyKey: f.key('void'),
       actor,
-      transactionId: payment.transaction.id,
+      transactionId: second.transaction.id,
       reason: 'test',
     });
+    expect(payment.transaction.entries.length).toBeGreaterThan(0);
     await f.ledger.adjust({
       ...base,
       idempotencyKey: f.key('adjust'),

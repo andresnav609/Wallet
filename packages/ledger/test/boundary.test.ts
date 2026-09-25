@@ -117,6 +117,16 @@ describe('database privileges', () => {
         f.tenantId,
       ]),
     ).rejects.toSatisfy(immutable);
+    // Row triggers only fire on matched rows: make sure an audit row exists.
+    await f.ledger.adjust({
+      tenantId: f.tenantId,
+      customerId: f.customerId,
+      actor,
+      idempotencyKey: 'audit-row',
+      account: 'paid_funds',
+      amount: 1,
+      reason: 'create an audit row',
+    });
     await expect(
       f.db.admin.query('delete from audit_log where tenant_id = $1', [f.tenantId]),
     ).rejects.toSatisfy(immutable);

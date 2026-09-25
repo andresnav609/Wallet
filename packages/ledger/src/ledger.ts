@@ -162,7 +162,7 @@ class LedgerImpl implements Ledger {
     return this.creditFunds(input, 'cash_top_up', 'cash_received');
   }
 
-  private creditFunds(
+  private async creditFunds(
     input: TopUpInput,
     type: 'top_up' | 'cash_top_up',
     counterpart: 'topups_received' | 'cash_received',
@@ -232,7 +232,7 @@ class LedgerImpl implements Ledger {
     );
   }
 
-  charge(input: ChargeInput): Promise<ChargeResult> {
+  async charge(input: ChargeInput): Promise<ChargeResult> {
     assertPositiveInteger('amountMinor', input.amountMinor);
     const pointsEarned = input.pointsEarned ?? 0;
     assertNonNegativeInteger('pointsEarned', pointsEarned);
@@ -308,7 +308,7 @@ class LedgerImpl implements Ledger {
     );
   }
 
-  redeemPoints(input: RedeemPointsInput): Promise<WriteResult> {
+  async redeemPoints(input: RedeemPointsInput): Promise<WriteResult> {
     assertPositiveInteger('points', input.points);
     const hash = requestHash({
       type: 'reward_redemption',
@@ -354,7 +354,7 @@ class LedgerImpl implements Ledger {
     return this.reverse(input, 'refund');
   }
 
-  private reverse(input: ReversalInput, type: 'void' | 'refund'): Promise<WriteResult> {
+  private async reverse(input: ReversalInput, type: 'void' | 'refund'): Promise<WriteResult> {
     if (!input.reason || input.reason.trim() === '') {
       throw new InvalidInputError('a reason is required to reverse a transaction');
     }
@@ -411,7 +411,7 @@ class LedgerImpl implements Ledger {
     );
   }
 
-  adjust(input: AdjustmentInput): Promise<WriteResult> {
+  async adjust(input: AdjustmentInput): Promise<WriteResult> {
     if (!Number.isInteger(input.amount) || input.amount === 0) {
       throw new InvalidInputError('amount must be a non-zero integer');
     }
@@ -650,9 +650,9 @@ class LedgerImpl implements Ledger {
     if (rows.length < expected) {
       await client.query(
         `insert into ledger_accounts (tenant_id, owner_type, code, unit, currency)
-         select $1, 'tenant', code, 'money', $2 from unnest($3::text[]) as m(code)
+         select $1::uuid, 'tenant', code, 'money', $2::char(3) from unnest($3::text[]) as m(code)
          union all
-         select $1, 'tenant', code, 'points', null from unnest($4::text[]) as p(code)
+         select $1::uuid, 'tenant', code, 'points', null::char(3) from unnest($4::text[]) as p(code)
          on conflict (tenant_id, owner_type, customer_id, code) do nothing`,
         [tenant.id, tenant.currency, TENANT_MONEY_ACCOUNT_CODES, TENANT_POINTS_ACCOUNT_CODES],
       );
@@ -765,7 +765,7 @@ class LedgerImpl implements Ledger {
     const tenantId = entries[0]!.account.tenant_id;
     await client.query(
       `insert into ledger_entries (tenant_id, transaction_id, account_id, unit, currency, amount)
-       select $1, $2, account_id, unit, currency, amount
+       select $1::uuid, $2::uuid, account_id, unit, currency::char(3), amount
        from unnest($3::uuid[], $4::text[], $5::text[], $6::bigint[]) as e(account_id, unit, currency, amount)`,
       [
         tenantId,

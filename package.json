@@ -8,8 +8,8 @@
   "scripts": {
     "db:up": "docker compose up -d db",
     "db:down": "docker compose down",
-    "db:setup": "pnpm --filter @wallet/db setup",
-    "db:migrate": "pnpm --filter @wallet/db migrate",
+    "db:setup": "pnpm --filter @wallet/db run setup",
+    "db:migrate": "pnpm --filter @wallet/db run migrate",
     "db:seed": "tsx scripts/seed.ts",
     "test": "turbo run test",
     "typecheck": "turbo run typecheck && tsc --noEmit -p tsconfig.json",

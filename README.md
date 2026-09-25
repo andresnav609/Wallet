@@ -22,7 +22,7 @@ Requirements: Node 22, pnpm (via `corepack enable`), Docker Desktop.
 ```bash
 cp .env.example .env
 pnpm install
-pnpm db:up        # PostgreSQL 16 in Docker
+pnpm db:up        # PostgreSQL 16 in Docker, exposed on localhost:5433
 pnpm db:setup     # creates the wallet_app / wallet_ledger roles and applies migrations
 pnpm db:seed      # optional: Demo Club tenant
 pnpm test         # every package's tests, against real PostgreSQL
