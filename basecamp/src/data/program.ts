@@ -9,12 +9,17 @@ export const DAY_LABEL: Record<DayType, string> = {
   cardioCore: 'Cardio + Core',
   upperB: 'Upper B',
   lowerB: 'Lower B',
+  upperC: 'Upper C',
+  lowerC: 'Lower C',
   hiit: 'HIIT Circuit',
   rest: 'Rest',
 };
 
+/** Every selectable day type, in menu order. */
+export const DAY_TYPES: DayType[] = ['upperA', 'upperB', 'upperC', 'lowerA', 'lowerB', 'lowerC', 'cardioCore', 'hiit', 'rest'];
+
 export const DAY_SHORT: Record<DayType, string> = {
-  upperA: 'UP A', lowerA: 'LO A', cardioCore: 'CAR', upperB: 'UP B', lowerB: 'LO B', hiit: 'HIIT', rest: 'REST',
+  upperA: 'UP A', lowerA: 'LO A', cardioCore: 'CAR', upperB: 'UP B', lowerB: 'LO B', upperC: 'UP C', lowerC: 'LO C', hiit: 'HIIT', rest: 'REST',
 };
 
 export const PHASES: Record<'foundation' | 'build' | 'push', PhaseParams> = {
@@ -131,6 +136,44 @@ export const TEMPLATES: Record<Exclude<DayType, 'rest'>, WorkoutTemplate> = {
     ],
     warmup: ['3 min easy bike or walk', '10 hip circles each way', '10 glute bridges', '10 band lateral walks each way', '10 bodyweight squats'],
     cooldown: ['Figure-4 glute stretch, 30 s each', 'Hamstring stretch, 30 s each', 'Hip flexor stretch, 30 s each'],
+  },
+  upperC: {
+    dayType: 'upperC', name: 'Upper C', focus: 'Arms & shoulders: dips, overhead push, rows', emoji: '🏋️',
+    blocks: [
+      { name: 'Circuit', slots: [
+        { pattern: 'dip' },
+        { pattern: 'row' },
+        { pattern: 'pike' },
+        { pattern: 'pull' },
+        { pattern: 'push' },
+        { pattern: 'kneeRaise' },
+      ] },
+      { name: 'Finisher', rounds: 2, slots: [
+        { fixed: { gym: 'dead_hang', home: 'dead_hang' }, seconds: [15, 30] },
+        { fixed: { gym: 'band_pull_apart', home: 'band_pull_apart' } },
+      ] },
+    ],
+    warmup: ['2 min easy walk or march', '10 arm circles each way', '10 wall push-ups', '10 band pull-aparts', '20 s dead hang'],
+    cooldown: ['Triceps stretch, 20 s each', 'Doorway chest stretch, 30 s each', 'Lat stretch on the bar, 30 s'],
+  },
+  lowerC: {
+    dayType: 'lowerC', name: 'Lower C', focus: 'Single-leg & balance: lunges, step-ups, glutes', emoji: '🦶',
+    blocks: [
+      { name: 'Circuit', slots: [
+        { pattern: 'lunge' },
+        { pattern: 'stepup' },
+        { pattern: 'hinge' },
+        { pattern: 'squat' },
+        { pattern: 'sidePlank' },
+        { pattern: 'calf' },
+      ] },
+      { name: 'Finisher', rounds: 2, slots: [
+        { fixed: { gym: 'wall_sit', home: 'wall_sit' }, seconds: [30, 60] },
+        { fixed: { gym: 'band_lateral_walk', home: 'band_lateral_walk' } },
+      ] },
+    ],
+    warmup: ['3 min easy bike or walk', '10 leg swings each leg', '10 glute bridges', '10 reverse lunges, slow', '10 calf raises'],
+    cooldown: ['Couch stretch, 30 s each side', 'Figure-4 glute stretch, 30 s each', 'Calf stretch on a step, 30 s each'],
   },
   hiit: {
     dayType: 'hiit', name: 'HIIT Circuit', focus: 'Low-impact intervals: 40 s on, 20 s off', emoji: '🔥',

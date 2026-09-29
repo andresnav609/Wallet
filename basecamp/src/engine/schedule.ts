@@ -24,11 +24,17 @@ export function phaseName(id: PhaseId): string {
   return PHASES[id].name;
 }
 
+/** The weekly template: the user's custom split or the default one. */
+export function weekSplitOf(data: Pick<AppData, 'profile'>): DayType[] {
+  const s = data.profile.weekSplit;
+  return s && s.length === 7 ? s : WEEK_SPLIT;
+}
+
 /** The planned day type for a date, considering moves and skips. */
-export function dayTypeFor(data: Pick<AppData, 'planOverrides'>, date: string): DayType {
+export function dayTypeFor(data: Pick<AppData, 'planOverrides' | 'profile'>, date: string): DayType {
   const o = data.planOverrides[date];
   if (o) return o;
-  return WEEK_SPLIT[weekdayIndex(date)];
+  return weekSplitOf(data)[weekdayIndex(date)];
 }
 
 export type DayStatus = 'done' | 'missed' | 'skipped' | 'planned' | 'rest' | 'today' | 'before';
@@ -59,9 +65,10 @@ export function moveWorkout(
   from: string,
   to: string,
   fromType: DayType,
+  split: DayType[] = WEEK_SPLIT,
 ): Record<string, DayType> {
   const next = { ...overrides };
-  const targetType = next[to] ?? WEEK_SPLIT[weekdayIndex(to)];
+  const targetType = next[to] ?? split[weekdayIndex(to)];
   next[to] = fromType;
   // Swap so the week still contains every session.
   next[from] = targetType;
@@ -69,7 +76,7 @@ export function moveWorkout(
 }
 
 /** Next `count` non-rest planned days strictly after `date`. */
-export function upcoming(data: Pick<AppData, 'planOverrides' | 'skipped' | 'sessions'>, date: string, count: number): { date: string; dayType: DayType }[] {
+export function upcoming(data: Pick<AppData, 'planOverrides' | 'skipped' | 'sessions' | 'profile'>, date: string, count: number): { date: string; dayType: DayType }[] {
   const out: { date: string; dayType: DayType }[] = [];
   let d = addDays(date, 1);
   let guard = 0;
@@ -83,7 +90,7 @@ export function upcoming(data: Pick<AppData, 'planOverrides' | 'skipped' | 'sess
 }
 
 /** Planned training days (non-rest) in the week containing `date`. */
-export function plannedThisWeek(data: Pick<AppData, 'planOverrides'>, date: string): string[] {
+export function plannedThisWeek(data: Pick<AppData, 'planOverrides' | 'profile'>, date: string): string[] {
   const start = startOfWeek(date);
   const out: string[] = [];
   for (let i = 0; i < 7; i++) {

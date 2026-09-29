@@ -8,7 +8,7 @@ import { idbStorage } from './db';
 import { todayKey } from '../engine/dates';
 import { detectPRs, sessionTotals } from '../engine/stats';
 import { newlyUnlocked } from '../engine/achievements';
-import { moveWorkout } from '../engine/schedule';
+import { moveWorkout, weekSplitOf } from '../engine/schedule';
 
 export const DATA_VERSION = 1;
 
@@ -72,6 +72,8 @@ interface Actions {
   addPhoto: (meta: PhotoMeta) => void;
   deletePhoto: (id: string) => void;
   movePlan: (from: string, to: string, fromType: DayType) => void;
+  setPlanDay: (date: string, type: DayType) => void;
+  setWeekSplit: (split: DayType[] | undefined) => void;
   toggleSkip: (date: string) => void;
   startSession: (workout: BuiltWorkout) => void;
   updateActive: (patch: Partial<ActiveSession> | ((a: ActiveSession) => Partial<ActiveSession>)) => void;
@@ -143,7 +145,9 @@ export const useStore = create<Store>()(
       addPhoto: (meta) => set((s) => ({ photos: [meta, ...s.photos] })),
       deletePhoto: (id) => set((s) => ({ photos: s.photos.filter((p) => p.id !== id) })),
 
-      movePlan: (from, to, fromType) => set((s) => ({ planOverrides: moveWorkout(s.planOverrides, from, to, fromType) })),
+      movePlan: (from, to, fromType) => set((s) => ({ planOverrides: moveWorkout(s.planOverrides, from, to, fromType, weekSplitOf(s)) })),
+      setPlanDay: (date, type) => set((s) => ({ planOverrides: { ...s.planOverrides, [date]: type } })),
+      setWeekSplit: (split) => set((s) => ({ profile: { ...s.profile, weekSplit: split } })),
       toggleSkip: (date) =>
         set((s) => ({ skipped: s.skipped.includes(date) ? s.skipped.filter((d) => d !== date) : [...s.skipped, date] })),
 

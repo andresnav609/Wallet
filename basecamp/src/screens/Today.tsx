@@ -12,6 +12,7 @@ import { Ring } from '../components/Ring';
 import { Segmented } from '../components/Controls';
 import { WorkoutPreview } from '../components/WorkoutPreview';
 import { Sheet } from '../components/Sheet';
+import { DayTypePicker } from '../components/DayTypePicker';
 import { unlockAudio } from '../lib/audio';
 import { greeting } from '../lib/format';
 import type { Habits, Location } from '../types';
@@ -31,6 +32,8 @@ export function Today() {
   const today = todayKey();
   const [location, setLocation] = useState<Location>(store.profile.defaultLocation);
   const [preview, setPreview] = useState(false);
+  const [changing, setChanging] = useState(false);
+  const todayType = dayTypeFor(store, today);
 
   const workout = useMemo(() => buildWorkout({ data: store, date: today, location }), [store.levels, store.planOverrides, store.sessions, store.profile, today, location]);
   const status = dayStatus(store, today, today);
@@ -137,7 +140,11 @@ export function Today() {
             {REST_DAY_TIPS.map((t) => <li key={t}>{t}</li>)}
           </ul>
           {status === 'skipped' && <div className="pill warn mt12">Skipped</div>}
+          {!store.active && <button className="btn block mt12" onClick={() => setChanging(true)}>Train today instead</button>}
         </div>
+      )}
+      {workout && !doneSession && !store.active && (
+        <button className="btn ghost sm" style={{ width: '100%', marginTop: 6 }} onClick={() => setChanging(true)}>Not feeling {workout.name}? Change today's workout</button>
       )}
 
       <div className="section-title"><span>This week</span><Link className="link" to="/plan">Plan</Link></div>
@@ -203,6 +210,11 @@ export function Today() {
           </Link>
         ))}
       </div>
+
+      <Sheet open={changing} onClose={() => setChanging(false)} title="Today's workout">
+        <p className="small muted mb12">Only today changes. To change every week, edit the weekly schedule in Profile.</p>
+        <DayTypePicker value={todayType} onChange={(t) => { store.setPlanDay(today, t); setChanging(false); }} />
+      </Sheet>
 
       <Sheet open={preview} onClose={() => setPreview(false)} title={workout ? `${workout.emoji} ${workout.name}` : ''}>
         {workout && (

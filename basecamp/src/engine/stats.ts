@@ -51,7 +51,7 @@ export function detectPRs(previous: Session[], sets: SetLog[]): PersonalRecord[]
  * training day was done. Rest days and skipped days do not break it. Today does
  * not break it if not done yet.
  */
-export function currentStreak(data: Pick<AppData, 'sessions' | 'planOverrides' | 'skipped'>, today = todayKey()): number {
+export function currentStreak(data: Pick<AppData, 'sessions' | 'planOverrides' | 'skipped' | 'profile'>, today = todayKey()): number {
   const doneDates = new Set(data.sessions.map((s) => s.date));
   let streak = 0;
   let d = today;
@@ -70,7 +70,7 @@ export function currentStreak(data: Pick<AppData, 'sessions' | 'planOverrides' |
   return streak;
 }
 
-export function bestStreak(data: Pick<AppData, 'sessions' | 'planOverrides' | 'skipped'>, today = todayKey()): number {
+export function bestStreak(data: Pick<AppData, 'sessions' | 'planOverrides' | 'skipped' | 'profile'>, today = todayKey()): number {
   if (data.sessions.length === 0) return 0;
   const first = [...data.sessions].sort((a, b) => (a.date < b.date ? -1 : 1))[0].date;
   const doneDates = new Set(data.sessions.map((s) => s.date));

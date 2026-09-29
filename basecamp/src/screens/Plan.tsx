@@ -10,6 +10,7 @@ import { WorkoutPreview } from '../components/WorkoutPreview';
 import { IconChevronLeft, IconChevronRight } from '../components/Icons';
 import { unlockAudio } from '../lib/audio';
 import { useToast } from '../components/Toast';
+import { DayTypePicker } from '../components/DayTypePicker';
 
 export function Plan() {
   const store = useStore();
@@ -19,6 +20,7 @@ export function Plan() {
   const [cursor, setCursor] = useState(() => today.slice(0, 7)); // YYYY-MM
   const [selected, setSelected] = useState<string | null>(null);
   const [moveTo, setMoveTo] = useState('');
+  const [changing, setChanging] = useState(false);
 
   const [y, m] = cursor.split('-').map(Number);
   const days = useMemo(() => {
@@ -113,7 +115,13 @@ export function Plan() {
                 ))}
               </div>
             )}
-            {selWorkout ? (
+            {changing ? (
+              <>
+                <div className="small muted">Choose what to do on this day. Only this date changes.</div>
+                <DayTypePicker value={selType} onChange={(t) => { store.setPlanDay(sel, t); setChanging(false); toast(`${formatLong(sel)} set to ${DAY_LABEL[t]}`); }} />
+                <button className="btn block" onClick={() => setChanging(false)}>Cancel</button>
+              </>
+            ) : selWorkout ? (
               <>
                 <div className="small muted">{selWorkout.focus} · ~{selWorkout.estMinutes} min</div>
                 <WorkoutPreview workout={selWorkout} compact />
@@ -124,6 +132,7 @@ export function Plan() {
                   <button className="btn block" onClick={startThis}>Do this workout today</button>
                 )}
                 <div className="divider" />
+                {selStatus !== 'done' && <button className="btn block" onClick={() => setChanging(true)}>Change this day's workout</button>}
                 <div className="field">
                   <label htmlFor="move-to">Move to another day</label>
                   <div className="row">
@@ -139,7 +148,10 @@ export function Plan() {
                 )}
               </>
             ) : (
-              <div className="empty">Rest day. Walk, stretch, eat well, sleep.</div>
+              <>
+                <div className="empty">Rest day. Walk, stretch, eat well, sleep.</div>
+                {sel >= today && <button className="btn block" onClick={() => setChanging(true)}>Train on this day instead</button>}
+              </>
             )}
           </div>
         )}

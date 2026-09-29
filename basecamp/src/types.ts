@@ -9,6 +9,8 @@ export type DayType =
   | 'cardioCore'
   | 'upperB'
   | 'lowerB'
+  | 'upperC'
+  | 'lowerC'
   | 'hiit'
   | 'rest';
 
@@ -217,6 +219,8 @@ export interface Profile {
   sound: boolean;
   vibration: boolean;
   units: Units;
+  /** Workout type for each weekday, Monday first. Falls back to the default split. */
+  weekSplit?: DayType[];
   goals: {
     steps: number;
     water: number;

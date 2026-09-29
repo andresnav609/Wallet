@@ -8,9 +8,13 @@ import { formatHeight, formatWeight, fromLb, toLb, weightUnit, bmi } from '../en
 import { formatShort, todayKey } from '../engine/dates';
 import { phaseName, phaseForWeek, weekNumber } from '../engine/schedule';
 import { PHASES } from '../data/program';
-import type { Profile as ProfileT } from '../types';
+import type { DayType, Profile as ProfileT } from '../types';
+import { DAY_LABEL, DAY_TYPES, WEEK_SPLIT } from '../data/program';
+import { WEEKDAY_SHORT } from '../engine/dates';
+import { weekSplitOf } from '../engine/schedule';
+import { dayEmoji } from '../components/DayTypePicker';
 
-type Editing = null | 'name' | 'height' | 'weights' | 'startDate' | 'rest' | 'goals';
+type Editing = null | 'name' | 'height' | 'weights' | 'startDate' | 'rest' | 'goals' | 'schedule';
 
 export function Profile() {
   const store = useStore();
@@ -19,6 +23,7 @@ export function Profile() {
   const fileRef = useRef<HTMLInputElement>(null);
   const [editing, setEditing] = useState<Editing>(null);
   const [draft, setDraft] = useState<Record<string, string>>({});
+  const [splitDraft, setSplitDraft] = useState<DayType[]>(WEEK_SPLIT);
   const units = p.units;
   const week = weekNumber(p.startDate, todayKey());
   const latest = [...store.weights].sort((a, b) => (a.date < b.date ? 1 : -1))[0];
@@ -32,6 +37,7 @@ export function Profile() {
       startDate: p.startDate, roundRest: String(p.roundRest), switchRest: String(p.switchRest),
       steps: String(p.goals.steps), water: String(p.goals.water), protein: String(p.goals.protein), sleep: String(p.goals.sleep), weeklyMinutes: String(p.goals.weeklyMinutes),
     });
+    setSplitDraft([...weekSplitOf({ profile: p })]);
     setEditing(e);
   };
   const d = (k: string) => draft[k] ?? '';
@@ -44,6 +50,7 @@ export function Profile() {
     if (editing === 'weights') { patch.startWeightLb = toLb(Number(d('start')), units); patch.goalWeightLb = toLb(Number(d('goal')), units); }
     if (editing === 'startDate') patch.startDate = d('startDate');
     if (editing === 'rest') { patch.roundRest = Math.max(15, Number(d('roundRest')) || 60); patch.switchRest = Math.max(0, Number(d('switchRest')) || 0); }
+    if (editing === 'schedule') store.setWeekSplit(splitDraft.join() === WEEK_SPLIT.join() ? undefined : splitDraft);
     if (editing === 'goals') store.updateGoals({ steps: Number(d('steps')) || 8000, water: Number(d('water')) || 8, protein: Number(d('protein')) || 150, sleep: Number(d('sleep')) || 7.5, weeklyMinutes: Number(d('weeklyMinutes')) || 270 });
     store.updateProfile(patch);
     setEditing(null);
@@ -97,6 +104,7 @@ export function Profile() {
       <div className="section-title">Training</div>
       <div className="card">
         <ListRow label="Default location"><Segmented value={p.defaultLocation} onChange={(v) => store.updateProfile({ defaultLocation: v })} options={[{ value: 'gym', label: 'Gym' }, { value: 'home', label: 'Home' }]} /></ListRow>
+        <ListRow label="Weekly schedule" value={weekSplitOf({ profile: p }).filter((t) => t !== 'rest').length + ' days'} onClick={() => open('schedule')} />
         <ListRow label="Rest between rounds / moves" value={`${p.roundRest} s / ${p.switchRest} s`} onClick={() => open('rest')} />
         <ListRow label="Sound"><Toggle on={p.sound} onChange={(v) => store.updateProfile({ sound: v })} label="Sound" /></ListRow>
         <ListRow label="Vibration"><Toggle on={p.vibration} onChange={(v) => store.updateProfile({ vibration: v })} label="Vibration" /></ListRow>
@@ -128,7 +136,7 @@ export function Profile() {
       <div className="center tiny faint mt16">Base Camp · your data never leaves this device</div>
 
       <Sheet open={editing !== null} onClose={() => setEditing(null)} title={
-        editing === 'name' ? 'Name' : editing === 'height' ? 'Height' : editing === 'weights' ? 'Weights' : editing === 'startDate' ? 'Program start' : editing === 'rest' ? 'Rest times' : 'Goals'
+        editing === 'name' ? 'Name' : editing === 'height' ? 'Height' : editing === 'weights' ? 'Weights' : editing === 'startDate' ? 'Program start' : editing === 'rest' ? 'Rest times' : editing === 'schedule' ? 'Weekly schedule' : 'Goals'
       }>
         <div className="stack">
           {editing === 'name' && <div className="field"><label htmlFor="pf-name">Name</label><input id="pf-name" className="input" value={d('name')} onChange={(e) => setD('name', e.target.value)} /></div>}
@@ -143,6 +151,28 @@ export function Profile() {
             <>
               <div className="grid2">{num('pf-rr', 'Between rounds', 'roundRest', 's')}{num('pf-sr', 'Between moves', 'switchRest', 's')}</div>
               <div className="tiny faint">Phases and deloads still add their own adjustments on top.</div>
+            </>
+          )}
+          {editing === 'schedule' && (
+            <>
+              <p className="small muted">Pick what you do on each weekday. Single days can still be moved or changed from the Plan tab.</p>
+              {splitDraft.map((t, i) => (
+                <div key={i} className="list-row">
+                  <div className="bold" style={{ width: 44 }}>{WEEKDAY_SHORT[i]}</div>
+                  <select
+                    className="input grow"
+                    aria-label={`${WEEKDAY_SHORT[i]} workout`}
+                    value={t}
+                    onChange={(e) => setSplitDraft((d) => d.map((x, j) => (j === i ? (e.target.value as DayType) : x)))}
+                  >
+                    {DAY_TYPES.map((o) => <option key={o} value={o}>{dayEmoji(o)} {DAY_LABEL[o]}</option>)}
+                  </select>
+                </div>
+              ))}
+              <div className="row" style={{ justifyContent: 'space-between' }}>
+                <span className="small muted">{splitDraft.filter((t) => t !== 'rest').length} training days</span>
+                <button className="btn sm" onClick={() => setSplitDraft([...WEEK_SPLIT])}>Reset to default</button>
+              </div>
             </>
           )}
           {editing === 'goals' && (

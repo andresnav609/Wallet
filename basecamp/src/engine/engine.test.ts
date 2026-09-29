@@ -83,6 +83,15 @@ describe('schedule', () => {
     expect(moved['2026-10-04']).toBe('upperA');
     expect(moved['2026-09-28']).toBe('rest');
   });
+  it('uses a custom weekly split', () => {
+    const d = baseData();
+    d.profile.weekSplit = ['lowerA', 'upperA', 'rest', 'upperC', 'lowerC', 'cardioCore', 'hiit'];
+    expect(dayTypeFor(d, '2026-09-28')).toBe('lowerA');
+    expect(dayTypeFor(d, '2026-09-30')).toBe('rest');
+    expect(dayTypeFor(d, '2026-10-04')).toBe('hiit');
+    expect(buildWorkout({ data: d, date: '2026-10-01' })!.name).toBe('Upper C');
+    expect(buildWorkout({ data: d, date: '2026-10-02' })!.name).toBe('Lower C');
+  });
   it('reports day status', () => {
     const d = baseData({ sessions: [session('2026-09-28', pushSets(8))], skipped: ['2026-09-29'] });
     const today = '2026-09-30';
