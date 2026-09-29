@@ -29,6 +29,7 @@ const defs: (Achievement & { check: Check })[] = [
   { id: 'goal_weight', name: 'Summit', description: 'Reach your goal weight.', emoji: '🚩', check: (d) => latestWeight(d) !== null && (latestWeight(d) as number) <= d.profile.goalWeightLb },
   { id: 'long_session', name: 'Long haul', description: 'Finish a 60-minute workout.', emoji: '⏱️', check: (d) => d.sessions.some((s) => s.durationSec >= 3600) },
   { id: 'early_bird', name: 'Early bird', description: 'Finish a workout before 8 am.', emoji: '🌅', check: (d) => d.sessions.some((s) => new Date(s.finishedAt).getHours() < 8) },
+  { id: 'extra_10', name: 'Night owl', description: 'Finish 10 companion routines (night or morning).', emoji: '🌙', check: (d) => d.sessions.filter((s) => s.extra).length >= 10 },
   { id: 'both_places', name: 'Anywhere', description: 'Train at the gym and at home.', emoji: '🏠', check: (d) => d.sessions.some((s) => s.location === 'gym') && d.sessions.some((s) => s.location === 'home') },
 ];
 

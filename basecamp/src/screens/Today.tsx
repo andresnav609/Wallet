@@ -3,10 +3,10 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useStore } from '../store/useStore';
 import { buildWorkout } from '../engine/builder';
 import { addDays, formatLong, startOfWeek, todayKey, WEEKDAY_SHORT, fromKey } from '../engine/dates';
-import { dayStatus, dayTypeFor, isDeloadWeek, phaseForWeek, phaseName, upcoming, weekNumber } from '../engine/schedule';
+import { dayStatus, dayTypeFor, extraTypeFor, isDeloadWeek, phaseForWeek, phaseName, trainingTimeOf, upcoming, weekNumber } from '../engine/schedule';
 import { ringsFor } from '../engine/stats';
 import { allSuggestions } from '../engine/progression';
-import { DAY_LABEL, DAY_SHORT, PHASES, REST_DAY_TIPS, TEMPLATES } from '../data/program';
+import { DAY_LABEL, DAY_SHORT, EXTRA_TYPES, PHASES, REST_DAY_TIPS, TEMPLATES } from '../data/program';
 import { PATTERN_LABEL } from '../data/exercises';
 import { Ring } from '../components/Ring';
 import { Segmented } from '../components/Controls';
@@ -33,11 +33,18 @@ export function Today() {
   const [location, setLocation] = useState<Location>(store.profile.defaultLocation);
   const [preview, setPreview] = useState(false);
   const [changing, setChanging] = useState(false);
+  const [changingExtra, setChangingExtra] = useState(false);
+  const [previewExtra, setPreviewExtra] = useState(false);
   const todayType = dayTypeFor(store, today);
+  const trainingTime = trainingTimeOf(store);
+  const extraType = extraTypeFor(store, today);
+  const extraWorkout = useMemo(() => buildWorkout({ data: store, date: today, location, dayType: extraType }), [store.levels, store.profile, today, location, extraType]);
+  const doneExtra = store.sessions.filter((s) => s.date === today && s.extra).sort((a, b) => b.finishedAt - a.finishedAt)[0];
+  const extraWhen = trainingTime === 'night' ? 'This morning' : 'Tonight';
 
   const workout = useMemo(() => buildWorkout({ data: store, date: today, location }), [store.levels, store.planOverrides, store.sessions, store.profile, today, location]);
   const status = dayStatus(store, today, today);
-  const doneSession = store.sessions.filter((s) => s.date === today).sort((a, b) => b.finishedAt - a.finishedAt)[0];
+  const doneSession = store.sessions.filter((s) => s.date === today && !s.extra).sort((a, b) => b.finishedAt - a.finishedAt)[0];
   const week = weekNumber(store.profile.startDate, today);
   const phase = phaseForWeek(week);
   const deload = isDeloadWeek(week);
@@ -51,6 +58,12 @@ export function Today() {
     if (!workout) return;
     await unlockAudio();
     store.startSession(workout);
+    nav('/workout');
+  };
+  const startExtra = async () => {
+    if (!extraWorkout) return;
+    await unlockAudio();
+    store.startSession(extraWorkout);
     nav('/workout');
   };
 
@@ -104,7 +117,7 @@ export function Today() {
         <div className="card accent">
           <div className="card-row">
             <div>
-              <div className="muted small">Today's workout</div>
+              <div className="muted small">{trainingTime === 'night' ? "Tonight's workout" : "Today's workout"}</div>
               <div className="big">{workout.emoji} {workout.name}</div>
               <div className="muted small">{workout.focus}</div>
             </div>
@@ -145,6 +158,30 @@ export function Today() {
       )}
       {workout && !doneSession && !store.active && (
         <button className="btn ghost sm" style={{ width: '100%', marginTop: 6 }} onClick={() => setChanging(true)}>Not feeling {workout.name}? Change today's workout</button>
+      )}
+
+      {extraWorkout && (
+        <div className="card mt12">
+          <div className="card-row">
+            <div className="grow">
+              <div className="row" style={{ gap: 6 }}>
+                <span className="muted small">{extraWhen}</span>
+                <span className={`pill ${trainingTime === 'both' ? 'accent' : ''}`}>{trainingTime === 'both' ? 'Planned' : 'Optional'}</span>
+              </div>
+              <div className="bold" style={{ fontSize: 20 }}>{extraWorkout.emoji} {extraWorkout.name}</div>
+              <div className="small muted">{extraWorkout.focus} · ~{extraWorkout.estMinutes} min</div>
+            </div>
+          </div>
+          {doneExtra ? (
+            <div className="pill good mt12">✅ Done · {formatDuration(doneExtra.durationSec)}</div>
+          ) : (
+            <div className="row mt12">
+              <button className="btn primary grow" onClick={startExtra} disabled={!!store.active}><IconPlay size={20} /> Start</button>
+              <button className="btn" onClick={() => setPreviewExtra(true)}>Preview</button>
+              <button className="btn" onClick={() => setChangingExtra(true)} aria-label="Change routine">Change</button>
+            </div>
+          )}
+        </div>
       )}
 
       <div className="section-title"><span>This week</span><Link className="link" to="/plan">Plan</Link></div>
@@ -210,6 +247,21 @@ export function Today() {
           </Link>
         ))}
       </div>
+
+      <Sheet open={changingExtra} onClose={() => setChangingExtra(false)} title={`${extraWhen}'s routine`}>
+        <p className="small muted mb12">Short companion routines. Change the default for every day in Profile → Training time.</p>
+        <DayTypePicker value={extraType} types={EXTRA_TYPES} onChange={(t) => { store.setExtraDay(today, t); setChangingExtra(false); }} />
+      </Sheet>
+
+      <Sheet open={previewExtra} onClose={() => setPreviewExtra(false)} title={extraWorkout ? `${extraWorkout.emoji} ${extraWorkout.name}` : ''}>
+        {extraWorkout && (
+          <>
+            <div className="muted small mb12">{extraWorkout.focus} · ~{extraWorkout.estMinutes} min</div>
+            <WorkoutPreview workout={extraWorkout} compact />
+            <button className="btn primary block xl mt16" onClick={() => { setPreviewExtra(false); void startExtra(); }} disabled={!!store.active}>Start</button>
+          </>
+        )}
+      </Sheet>
 
       <Sheet open={changing} onClose={() => setChanging(false)} title="Today's workout">
         <p className="small muted mb12">Only today changes. To change every week, edit the weekly schedule in Profile.</p>

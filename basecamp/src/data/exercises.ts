@@ -375,6 +375,43 @@ ex({ id: 'superman', name: 'Superman hold', pattern: 'accessory', mode: 'time', 
   muscles: ['Lower back', 'Glutes'], equipment: ['Floor / mat'],
   cues: ['Face down, arms forward.', 'Lift arms, chest and legs a few inches.', 'Look at the floor, neck neutral.', 'Breathe and hold.'] });
 
+/* ------------------------------------------------------------------ */
+/* MOBILITY (night / morning routines)                                 */
+/* ------------------------------------------------------------------ */
+ex({ id: 'cat_cow', name: 'Cat-cow', pattern: 'mobility', mode: 'time', location: 'both', range: [40, 40],
+  muscles: ['Spine', 'Core'], equipment: ['Floor / mat'],
+  cues: ['On hands and knees, wrists under shoulders, knees under hips.', 'Inhale: drop the belly, lift the chest and tailbone.', 'Exhale: round the back, tuck the chin and tailbone.', 'Slow, one breath per movement.'] });
+ex({ id: 'worlds_greatest_stretch', name: "World's greatest stretch", pattern: 'mobility', mode: 'time', location: 'both', unilateral: true, range: [30, 30],
+  muscles: ['Hips', 'Hamstrings', 'Thoracic spine'], equipment: ['Floor / mat'],
+  cues: ['Long lunge, back knee down, hands inside the front foot.', 'Drop the inside elbow toward the floor, then rotate that arm to the ceiling.', 'Follow the hand with your eyes.', 'Switch sides after the hold.'] });
+ex({ id: 'hip_flexor_stretch', name: 'Hip flexor stretch', pattern: 'mobility', mode: 'time', location: 'both', unilateral: true, range: [30, 30],
+  muscles: ['Hip flexors', 'Quads'], equipment: ['Floor / mat'],
+  cues: ['Half-kneeling, back knee on a cushion.', 'Squeeze the glute of the back leg and tuck the pelvis.', 'Shift forward gently until the front of the hip stretches.', 'Tall torso; no arching the lower back.'] });
+ex({ id: 'hamstring_stretch', name: 'Hamstring stretch', pattern: 'mobility', mode: 'time', location: 'both', unilateral: true, range: [30, 30],
+  muscles: ['Hamstrings'], equipment: ['Floor / mat, band optional'],
+  cues: ['On your back, one leg up, hands or a band behind the thigh.', 'Pull gently until you feel the back of the thigh.', 'Keep the other leg flat and the head down.', 'Breathe out to sink a little deeper.'] });
+ex({ id: 'figure4_stretch', name: 'Figure-4 glute stretch', pattern: 'mobility', mode: 'time', location: 'both', unilateral: true, range: [30, 30],
+  muscles: ['Glutes', 'Hips'], equipment: ['Floor / mat'],
+  cues: ['On your back, cross one ankle over the opposite knee.', 'Pull the bottom thigh toward the chest.', 'Push the crossed knee gently away.', 'Relax the shoulders and jaw.'] });
+ex({ id: 'doorway_chest_stretch', name: 'Doorway chest stretch', pattern: 'mobility', mode: 'time', location: 'both', range: [30, 30],
+  muscles: ['Chest', 'Front shoulders'], equipment: ['Doorway or post'],
+  cues: ['Forearms on the door frame, elbows at shoulder height.', 'Step one foot through until the chest opens.', 'Ribs down; do not arch the back.', 'Breathe slowly.'] });
+ex({ id: 'calf_stretch', name: 'Calf stretch', pattern: 'mobility', mode: 'time', location: 'both', unilateral: true, range: [30, 30],
+  muscles: ['Calves', 'Ankles'], equipment: ['Wall or step'],
+  cues: ['Hands on the wall, one leg back with the heel down.', 'Keep the back knee straight for the upper calf.', 'Bend it slightly for the lower calf.', 'Switch sides.'] });
+ex({ id: 'thoracic_rotation', name: 'Open-book rotation', pattern: 'mobility', mode: 'time', location: 'both', unilateral: true, range: [30, 30],
+  muscles: ['Thoracic spine', 'Chest'], equipment: ['Floor / mat'],
+  cues: ['Lie on your side, knees bent at 90 degrees, arms stacked in front.', 'Open the top arm across to the other side, following it with your eyes.', 'Keep the knees together on the floor.', 'Return slowly and repeat; switch sides.'] });
+ex({ id: 'hip_circles', name: 'Hip circles', pattern: 'mobility', mode: 'time', location: 'both', range: [30, 30],
+  muscles: ['Hips'], equipment: ['None'],
+  cues: ['Hands on hips, feet shoulder width.', 'Draw big slow circles with the hips.', 'Change direction halfway.', 'Knees soft, breathe normally.'] });
+ex({ id: 'child_pose', name: "Child's pose", pattern: 'mobility', mode: 'time', location: 'both', range: [45, 45],
+  muscles: ['Back', 'Hips', 'Lats'], equipment: ['Floor / mat'],
+  cues: ['Knees wide, big toes together, sit back on the heels.', 'Walk the hands forward and rest the forehead down.', 'Breathe into the back of the ribs.', 'Let the shoulders melt toward the floor.'] });
+ex({ id: 'box_breathing', name: 'Box breathing', pattern: 'mobility', mode: 'time', location: 'both', range: [60, 60],
+  muscles: ['Nervous system'], equipment: ['None'],
+  cues: ['Lie down or sit tall, one hand on the belly.', 'Inhale through the nose for 4, hold for 4.', 'Exhale through the mouth for 4, hold for 4.', 'Repeat until the timer ends; this is the signal to wind down.'] });
+
 export const EXERCISES: Exercise[] = list;
 export const EXERCISE_MAP: Record<string, Exercise> = Object.fromEntries(list.map((e) => [e.id, e]));
 
@@ -510,7 +547,7 @@ export const PATTERN_LABEL: Record<Pattern, string> = {
   push: 'Push', pull: 'Pull-up', row: 'Row', dip: 'Dip', pike: 'Overhead push',
   squat: 'Squat', hinge: 'Hinge', lunge: 'Lunge', stepup: 'Step-up', calf: 'Calf',
   plank: 'Plank', kneeRaise: 'Knee raise', antiExtension: 'Deep core', sidePlank: 'Side plank',
-  cardio: 'Cardio', conditioning: 'Conditioning', accessory: 'Accessory',
+  cardio: 'Cardio', conditioning: 'Conditioning', accessory: 'Accessory', mobility: 'Mobility',
 };
 
 /** Starting levels for a beginner who can do 1 to 5 push-ups. */

@@ -1,5 +1,6 @@
 import type { AppData, DayType, PhaseId, Session } from '../types';
 import { DELOAD_EVERY, PHASES, WEEK_SPLIT } from '../data/program';
+import type { TrainingTime } from '../types';
 import { addDays, diffDays, startOfWeek, weekdayIndex } from './dates';
 
 /** 1-based program week for a date. Dates before the start count as week 1. */
@@ -37,6 +38,21 @@ export function dayTypeFor(data: Pick<AppData, 'planOverrides' | 'profile'>, dat
   return weekSplitOf(data)[weekdayIndex(date)];
 }
 
+export function trainingTimeOf(data: Pick<AppData, 'profile'>): TrainingTime {
+  return data.profile.trainingTime ?? 'morning';
+}
+
+/** Companion routine suggested for a date: a night routine after a morning workout, a wake-up before a night workout. */
+export function extraTypeFor(data: Pick<AppData, 'planOverrides' | 'profile' | 'extraOverrides'>, date: string): DayType {
+  const o = data.extraOverrides[date];
+  if (o) return o;
+  if (trainingTimeOf(data) === 'night') return 'morningWake';
+  const main = dayTypeFor(data, date);
+  if (main === 'rest') return 'nightWalk';
+  if (main === 'upperA' || main === 'upperB' || main === 'upperC') return 'nightCore';
+  return 'nightMobility';
+}
+
 export type DayStatus = 'done' | 'missed' | 'skipped' | 'planned' | 'rest' | 'today' | 'before';
 
 export function sessionsOn(sessions: Session[], date: string): Session[] {
@@ -48,7 +64,7 @@ export function dayStatus(
   date: string,
   today: string,
 ): DayStatus {
-  const done = data.sessions.some((s) => s.date === date);
+  const done = data.sessions.some((s) => s.date === date && !s.extra);
   if (done) return 'done';
   const type = dayTypeFor(data, date);
   if (data.skipped.includes(date)) return 'skipped';

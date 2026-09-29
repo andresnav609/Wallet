@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useStore } from '../store/useStore';
-import type { Location } from '../types';
+import type { Location, TrainingTime } from '../types';
 import { Segmented } from '../components/Controls';
 import { todayKey } from '../engine/dates';
 
@@ -12,6 +12,7 @@ export function Onboarding() {
   const [heightFt, setHeightFt] = useState('5');
   const [heightIn, setHeightIn] = useState('9');
   const [location, setLocation] = useState<Location>('gym');
+  const [trainingTime, setTrainingTime] = useState<TrainingTime>('morning');
   const [startDate, setStartDate] = useState(todayKey());
 
   const submit = () => {
@@ -22,6 +23,7 @@ export function Onboarding() {
       goalWeightLb: Number(goal) || w - 30,
       heightIn: (Number(heightFt) || 5) * 12 + (Number(heightIn) || 0),
       defaultLocation: location,
+      trainingTime,
       startDate,
     });
   };
@@ -57,6 +59,11 @@ export function Onboarding() {
           <div className="field">
             <label>Where do you usually train?</label>
             <Segmented block value={location} onChange={setLocation} options={[{ value: 'gym', label: 'Gym' }, { value: 'home', label: 'Home' }]} />
+          </div>
+          <div className="field">
+            <label>When do you train?</label>
+            <Segmented block value={trainingTime} onChange={setTrainingTime} options={[{ value: 'morning', label: 'Morning' }, { value: 'night', label: 'Night' }, { value: 'both', label: 'Both' }]} />
+            <div className="tiny faint">"Both" adds a short night routine every day. The others offer it as optional.</div>
           </div>
           <div className="field">
             <label htmlFor="ob-d">Program start (week 1)</label>

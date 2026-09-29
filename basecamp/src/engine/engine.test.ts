@@ -2,11 +2,12 @@ import { describe, expect, it } from 'vitest';
 import type { AppData, Session, SetLog } from '../types';
 import { DEFAULT_LEVELS } from '../data/exercises';
 import { addDays, diffDays, startOfWeek, weekdayIndex } from './dates';
-import { dayStatus, dayTypeFor, isDeloadWeek, moveWorkout, phaseForWeek, upcoming, weekNumber } from './schedule';
+import { dayStatus, dayTypeFor, extraTypeFor, isDeloadWeek, moveWorkout, phaseForWeek, upcoming, weekNumber } from './schedule';
 import { buildWorkout } from './builder';
 import { allSuggestions, suggestionFor } from './progression';
 import { currentStreak, detectPRs, ringsFor, weekSummary } from './stats';
 import { newlyUnlocked } from './achievements';
+import { initialActive } from '../store/useStore';
 
 function baseData(overrides: Partial<AppData> = {}): AppData {
   return {
@@ -24,6 +25,7 @@ function baseData(overrides: Partial<AppData> = {}): AppData {
     habits: {},
     photos: [],
     planOverrides: {},
+    extraOverrides: {},
     skipped: [],
     progression: [],
     unlocked: {},
@@ -107,6 +109,49 @@ describe('schedule', () => {
     const list = upcoming(baseData(), '2026-10-03', 3);
     expect(list.map((x) => x.dayType)).toEqual(['upperA', 'lowerA', 'cardioCore']);
     expect(list[0].date).toBe('2026-10-05');
+  });
+});
+
+describe('companion routines', () => {
+  it('suggests a night routine after the main workout, a wake-up for night trainers', () => {
+    const d = baseData();
+    expect(extraTypeFor(d, '2026-09-28')).toBe('nightCore'); // upper day
+    expect(extraTypeFor(d, '2026-09-29')).toBe('nightMobility'); // lower day
+    expect(extraTypeFor(d, '2026-10-04')).toBe('nightWalk'); // rest day
+    d.profile.trainingTime = 'night';
+    expect(extraTypeFor(d, '2026-09-28')).toBe('morningWake');
+    d.extraOverrides['2026-09-28'] = 'nightWalk';
+    expect(extraTypeFor(d, '2026-09-28')).toBe('nightWalk');
+  });
+  it('builds short fixed routines that ignore phase and RPE', () => {
+    const d = baseData({ sessions: [session('2026-09-28', pushSets(8), { rpe: 10 })] });
+    const w = buildWorkout({ data: d, date: '2026-09-29', dayType: 'nightMobility' })!;
+    expect(w.extra).toBe(true);
+    expect(w.notes).toHaveLength(0);
+    expect(w.blocks[0].rounds).toBe(2);
+    expect(w.estMinutes).toBeGreaterThanOrEqual(10);
+    expect(w.estMinutes).toBeLessThanOrEqual(20);
+    const walk = buildWorkout({ data: d, date: '2026-09-29', dayType: 'nightWalk' })!;
+    expect(walk.blocks[0].exercises[0].target).toEqual([900, 900]);
+  });
+  it('does not count companion routines as the day being done', () => {
+    const d = baseData({ sessions: [session('2026-09-28', [], { extra: true, dayType: 'nightCore' })] });
+    expect(dayStatus(d, '2026-09-28', '2026-09-30')).toBe('missed');
+    expect(currentStreak(d, '2026-09-28')).toBe(0);
+  });
+});
+
+describe('player start', () => {
+  it('starts the countdown when the first move is timed', () => {
+    const d = baseData();
+    const cardio = buildWorkout({ data: d, date: '2026-09-30' })!; // cardio day starts with a 20 min walk
+    const a = initialActive(cardio, 1000);
+    expect(a.timerEndsAt).toBe(1000 + 1200 * 1000);
+    expect(a.timerTotal).toBe(1200);
+    const upper = buildWorkout({ data: d, date: '2026-09-28' })!;
+    const b = initialActive(upper, 1000);
+    expect(b.timerEndsAt).toBeUndefined();
+    expect(b.counter).toBe(6);
   });
 });
 

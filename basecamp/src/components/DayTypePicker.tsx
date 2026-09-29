@@ -10,10 +10,10 @@ export function dayFocus(t: DayType): string {
 }
 
 /** Vertical list of workout types with the current one highlighted. */
-export function DayTypePicker({ value, onChange }: { value: DayType; onChange: (t: DayType) => void }) {
+export function DayTypePicker({ value, onChange, types = DAY_TYPES }: { value: DayType; onChange: (t: DayType) => void; types?: DayType[] }) {
   return (
     <div className="stack" style={{ gap: 6 }} role="listbox" aria-label="Workout type">
-      {DAY_TYPES.map((t) => (
+      {types.map((t) => (
         <button
           key={t}
           role="option"

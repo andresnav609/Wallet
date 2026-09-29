@@ -52,7 +52,7 @@ export function detectPRs(previous: Session[], sets: SetLog[]): PersonalRecord[]
  * not break it if not done yet.
  */
 export function currentStreak(data: Pick<AppData, 'sessions' | 'planOverrides' | 'skipped' | 'profile'>, today = todayKey()): number {
-  const doneDates = new Set(data.sessions.map((s) => s.date));
+  const doneDates = new Set(data.sessions.filter((s) => !s.extra).map((s) => s.date));
   let streak = 0;
   let d = today;
   let guard = 0;
@@ -73,7 +73,7 @@ export function currentStreak(data: Pick<AppData, 'sessions' | 'planOverrides' |
 export function bestStreak(data: Pick<AppData, 'sessions' | 'planOverrides' | 'skipped' | 'profile'>, today = todayKey()): number {
   if (data.sessions.length === 0) return 0;
   const first = [...data.sessions].sort((a, b) => (a.date < b.date ? -1 : 1))[0].date;
-  const doneDates = new Set(data.sessions.map((s) => s.date));
+  const doneDates = new Set(data.sessions.filter((s) => !s.extra).map((s) => s.date));
   let best = 0;
   let run = 0;
   let d = first;
@@ -104,7 +104,7 @@ export function weekSummary(sessions: Session[], anyDateInWeek: string): WeekSum
   const mine = sessions.filter((s) => s.date >= start && s.date <= end);
   return {
     start,
-    workouts: mine.length,
+    workouts: mine.filter((s) => !s.extra).length,
     minutes: Math.round(mine.reduce((a, s) => a + s.durationSec, 0) / 60),
     reps: mine.reduce((a, s) => a + s.totalReps, 0),
     holdSec: mine.reduce((a, s) => a + s.totalHoldSec, 0),

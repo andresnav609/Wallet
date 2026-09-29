@@ -15,6 +15,7 @@ const GROUPS: { key: string; label: string; patterns: Pattern[] }[] = [
   { key: 'core', label: 'Core', patterns: ['plank', 'kneeRaise', 'antiExtension', 'sidePlank'] },
   { key: 'cardio', label: 'Cardio', patterns: ['cardio', 'conditioning'] },
   { key: 'accessory', label: 'Accessory', patterns: ['accessory'] },
+  { key: 'mobility', label: 'Mobility', patterns: ['mobility'] },
 ];
 
 const PATTERN_ORDER: Pattern[] = GROUPS.flatMap((g) => g.patterns);

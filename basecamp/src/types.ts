@@ -12,7 +12,13 @@ export type DayType =
   | 'upperC'
   | 'lowerC'
   | 'hiit'
+  | 'nightMobility'
+  | 'nightCore'
+  | 'nightWalk'
+  | 'morningWake'
   | 'rest';
+
+export type TrainingTime = 'morning' | 'night' | 'both';
 
 export type Pattern =
   | 'push'
@@ -31,7 +37,8 @@ export type Pattern =
   | 'sidePlank'
   | 'cardio'
   | 'conditioning'
-  | 'accessory';
+  | 'accessory'
+  | 'mobility';
 
 export type Mode = 'reps' | 'time';
 
@@ -99,6 +106,8 @@ export interface WorkoutTemplate {
   blocks: BlockTemplate[];
   warmup: string[];
   cooldown: string[];
+  /** Short companion routine (night / morning). Fixed rounds, no phase or RPE scaling. */
+  extra?: boolean;
 }
 
 export interface PhaseParams {
@@ -148,6 +157,8 @@ export interface BuiltWorkout {
   estMinutes: number;
   /** Human-readable adjustments applied (deload, RPE, etc.). */
   notes: string[];
+  /** Companion routine rather than the day's main workout. */
+  extra?: boolean;
 }
 
 export interface SetLog {
@@ -180,6 +191,8 @@ export interface Session {
   deload: boolean;
   prs: PersonalRecord[];
   achievements: string[];
+  /** Companion routine (night / morning), not the day's main workout. */
+  extra?: boolean;
 }
 
 export interface PersonalRecord {
@@ -221,6 +234,8 @@ export interface Profile {
   units: Units;
   /** Workout type for each weekday, Monday first. Falls back to the default split. */
   weekSplit?: DayType[];
+  /** When the main workout happens. 'both' plans a short companion routine every day. */
+  trainingTime?: TrainingTime;
   goals: {
     steps: number;
     water: number;
@@ -278,6 +293,8 @@ export interface AppData {
   habits: Record<string, Habits>;
   photos: PhotoMeta[];
   planOverrides: Record<string, DayType>;
+  /** Companion routine chosen for a specific date. */
+  extraOverrides: Record<string, DayType>;
   skipped: string[];
   progression: ProgressionEvent[];
   unlocked: Record<string, string>; // achievementId -> date

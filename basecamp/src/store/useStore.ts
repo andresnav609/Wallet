@@ -41,11 +41,29 @@ export function defaultData(): AppData {
     habits: {},
     photos: [],
     planOverrides: {},
+    extraOverrides: {},
     skipped: [],
     progression: [],
     unlocked: {},
     active: null,
     onboarded: false,
+  };
+}
+
+/** Initial player state for a workout: a timed first move starts its countdown immediately. */
+export function initialActive(workout: BuiltWorkout, now = Date.now()): ActiveSession {
+  const first = workout.blocks[0].exercises[0];
+  return {
+    workout,
+    startedAt: now,
+    block: 0,
+    round: 0,
+    exIndex: 0,
+    step: 'exercise',
+    counter: first.mode === 'reps' ? first.target[0] : 0,
+    timerEndsAt: first.mode === 'time' ? now + first.target[1] * 1000 : undefined,
+    timerTotal: first.mode === 'time' ? first.target[1] : undefined,
+    sets: [],
   };
 }
 
@@ -73,6 +91,7 @@ interface Actions {
   deletePhoto: (id: string) => void;
   movePlan: (from: string, to: string, fromType: DayType) => void;
   setPlanDay: (date: string, type: DayType) => void;
+  setExtraDay: (date: string, type: DayType) => void;
   setWeekSplit: (split: DayType[] | undefined) => void;
   toggleSkip: (date: string) => void;
   startSession: (workout: BuiltWorkout) => void;
@@ -93,9 +112,9 @@ function uid(): string {
 
 function pickData(s: Store): AppData {
   const {
-    version, profile, levels, levelSince, sessions, weights, measurements, habits, photos, planOverrides, skipped, progression, unlocked, active, onboarded,
+    version, profile, levels, levelSince, sessions, weights, measurements, habits, photos, planOverrides, extraOverrides, skipped, progression, unlocked, active, onboarded,
   } = s;
-  return { version, profile, levels, levelSince, sessions, weights, measurements, habits, photos, planOverrides, skipped, progression, unlocked, active, onboarded };
+  return { version, profile, levels, levelSince, sessions, weights, measurements, habits, photos, planOverrides, extraOverrides, skipped, progression, unlocked, active, onboarded };
 }
 
 export const useStore = create<Store>()(
@@ -147,23 +166,12 @@ export const useStore = create<Store>()(
 
       movePlan: (from, to, fromType) => set((s) => ({ planOverrides: moveWorkout(s.planOverrides, from, to, fromType, weekSplitOf(s)) })),
       setPlanDay: (date, type) => set((s) => ({ planOverrides: { ...s.planOverrides, [date]: type } })),
+      setExtraDay: (date, type) => set((s) => ({ extraOverrides: { ...s.extraOverrides, [date]: type } })),
       setWeekSplit: (split) => set((s) => ({ profile: { ...s.profile, weekSplit: split } })),
       toggleSkip: (date) =>
         set((s) => ({ skipped: s.skipped.includes(date) ? s.skipped.filter((d) => d !== date) : [...s.skipped, date] })),
 
-      startSession: (workout) =>
-        set({
-          active: {
-            workout,
-            startedAt: Date.now(),
-            block: 0,
-            round: 0,
-            exIndex: 0,
-            step: 'exercise',
-            counter: workout.blocks[0].exercises[0].mode === 'reps' ? workout.blocks[0].exercises[0].target[0] : 0,
-            sets: [],
-          },
-        }),
+      startSession: (workout) => set({ active: initialActive(workout) }),
       updateActive: (patch) =>
         set((s) => {
           if (!s.active) return {};
@@ -198,6 +206,7 @@ export const useStore = create<Store>()(
           deload: active.workout.deload,
           prs,
           achievements: [],
+          extra: active.workout.extra || undefined,
         };
         const nextData: AppData = { ...pickData(s), sessions: [...s.sessions, session], active: null };
         const achievements = newlyUnlocked(nextData);

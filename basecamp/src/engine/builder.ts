@@ -30,7 +30,7 @@ export function recentRpe(sessions: AppData['sessions'], date: string): number |
   return recent[0]?.rpe;
 }
 
-export function estimateMinutes(blocks: WorkoutBlock[], warmupItems: number): number {
+export function estimateMinutes(blocks: WorkoutBlock[], warmupItems: number, cooldownItems = 1): number {
   let sec = warmupItems > 0 ? 300 : 0; // warm-up
   for (const b of blocks) {
     let round = 0;
@@ -41,7 +41,7 @@ export function estimateMinutes(blocks: WorkoutBlock[], warmupItems: number): nu
     }
     sec += b.rounds * round + (b.rounds - 1) * b.roundRest;
   }
-  sec += 180; // cool-down
+  if (cooldownItems > 0) sec += 180; // cool-down
   return Math.round(sec / 60);
 }
 
@@ -58,14 +58,15 @@ export function buildWorkout({ data, date, location, dayType }: BuildInput): Bui
 
   let rounds = phase.rounds;
   let roundRestAdj = 0;
-  if (deload) {
+  const extra = !!tpl.extra;
+  if (deload && !extra) {
     rounds = Math.max(2, rounds - 1);
     roundRestAdj += 30;
     notes.push('Deload week: one round fewer and longer rests. Move well, do not chase reps.');
   }
 
   const rpe = recentRpe(data.sessions, date);
-  if (rpe !== undefined && !deload) {
+  if (rpe !== undefined && !deload && !extra) {
     if (rpe >= 9) {
       rounds = Math.max(2, rounds - 1);
       roundRestAdj += 15;
@@ -84,7 +85,7 @@ export function buildWorkout({ data, date, location, dayType }: BuildInput): Bui
       const { exerciseId, level } = resolveSlot(slot, loc, data.levels);
       const ex = getExercise(exerciseId);
       let target: [number, number];
-      if (ex.pattern === 'cardio') {
+      if (ex.pattern === 'cardio' && !slot.seconds) {
         const mins = deload ? Math.max(15, phase.cardioMinutes - 5) : phase.cardioMinutes;
         target = [mins * 60, mins * 60];
       } else if (slot.seconds && ex.mode === 'time') target = slot.seconds;
@@ -125,7 +126,8 @@ export function buildWorkout({ data, date, location, dayType }: BuildInput): Bui
     blocks,
     warmup: tpl.warmup,
     cooldown: tpl.cooldown,
-    estMinutes: estimateMinutes(blocks, tpl.warmup.length),
+    estMinutes: estimateMinutes(blocks, tpl.warmup.length, tpl.cooldown.length),
     notes,
+    extra,
   };
 }
