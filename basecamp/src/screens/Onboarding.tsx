@@ -63,7 +63,7 @@ export function Onboarding() {
           <div className="field">
             <label>When do you train?</label>
             <Segmented block value={trainingTime} onChange={setTrainingTime} options={[{ value: 'morning', label: 'Morning' }, { value: 'night', label: 'Night' }, { value: 'both', label: 'Both' }]} />
-            <div className="tiny faint">"Both" adds a short night routine every day. The others offer it as optional.</div>
+            <div className="tiny faint">"Both" plans a 30 min night routine every day. The others offer it as optional.</div>
           </div>
           <div className="field">
             <label htmlFor="ob-d">Program start (week 1)</label>

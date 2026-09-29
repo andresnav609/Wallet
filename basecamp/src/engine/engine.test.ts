@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import type { AppData, Session, SetLog } from '../types';
 import { DEFAULT_LEVELS } from '../data/exercises';
+import { EXTRA_TYPES } from '../data/program';
 import { addDays, diffDays, startOfWeek, weekdayIndex } from './dates';
 import { dayStatus, dayTypeFor, extraTypeFor, isDeloadWeek, moveWorkout, phaseForWeek, upcoming, weekNumber } from './schedule';
 import { buildWorkout } from './builder';
@@ -128,11 +129,17 @@ describe('companion routines', () => {
     const w = buildWorkout({ data: d, date: '2026-09-29', dayType: 'nightMobility' })!;
     expect(w.extra).toBe(true);
     expect(w.notes).toHaveLength(0);
-    expect(w.blocks[0].rounds).toBe(2);
-    expect(w.estMinutes).toBeGreaterThanOrEqual(10);
-    expect(w.estMinutes).toBeLessThanOrEqual(20);
+    expect(w.blocks[0].rounds).toBe(3);
     const walk = buildWorkout({ data: d, date: '2026-09-29', dayType: 'nightWalk' })!;
-    expect(walk.blocks[0].exercises[0].target).toEqual([900, 900]);
+    expect(walk.blocks[0].exercises[0].target).toEqual([1500, 1500]);
+  });
+  it('every companion routine lasts at least 30 minutes', () => {
+    const d = baseData();
+    for (const t of EXTRA_TYPES) {
+      const w = buildWorkout({ data: d, date: '2026-09-29', dayType: t })!;
+      expect(w.estMinutes, t).toBeGreaterThanOrEqual(30);
+      expect(w.estMinutes, t).toBeLessThanOrEqual(45);
+    }
   });
   it('does not count companion routines as the day being done', () => {
     const d = baseData({ sessions: [session('2026-09-28', [], { extra: true, dayType: 'nightCore' })] });

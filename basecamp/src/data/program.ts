@@ -204,9 +204,9 @@ export const TEMPLATES: Record<Exclude<DayType, 'rest'>, WorkoutTemplate> = {
     cooldown: ['Walk 3 min until breathing is normal', 'Quad stretch, 30 s each', 'Chest and shoulder stretch, 30 s'],
   },
   nightMobility: {
-    dayType: 'nightMobility', name: 'Night mobility', focus: 'Unwind: hips, hamstrings, chest, breathing', emoji: '🌙', extra: true,
+    dayType: 'nightMobility', name: 'Night mobility', focus: 'Unwind: hips, hamstrings, chest, then long holds and breathing', emoji: '🌙', extra: true,
     blocks: [
-      { name: 'Flow', rounds: 2, switchRest: 5, roundRest: 20, slots: [
+      { name: 'Flow', rounds: 3, switchRest: 5, roundRest: 30, slots: [
         { fixed: { gym: 'cat_cow', home: 'cat_cow' } },
         { fixed: { gym: 'worlds_greatest_stretch', home: 'worlds_greatest_stretch' } },
         { fixed: { gym: 'hip_flexor_stretch', home: 'hip_flexor_stretch' } },
@@ -215,52 +215,69 @@ export const TEMPLATES: Record<Exclude<DayType, 'rest'>, WorkoutTemplate> = {
         { fixed: { gym: 'doorway_chest_stretch', home: 'doorway_chest_stretch' } },
         { fixed: { gym: 'child_pose', home: 'child_pose' } },
       ] },
+      { name: 'Deep holds', rounds: 1, switchRest: 5, roundRest: 0, slots: [
+        { fixed: { gym: 'hip_flexor_stretch', home: 'hip_flexor_stretch' }, seconds: [60, 60] },
+        { fixed: { gym: 'hamstring_stretch', home: 'hamstring_stretch' }, seconds: [60, 60] },
+        { fixed: { gym: 'figure4_stretch', home: 'figure4_stretch' }, seconds: [60, 60] },
+        { fixed: { gym: 'calf_stretch', home: 'calf_stretch' }, seconds: [45, 45] },
+        { fixed: { gym: 'thoracic_rotation', home: 'thoracic_rotation' }, seconds: [45, 45] },
+        { fixed: { gym: 'child_pose', home: 'child_pose' }, seconds: [60, 60] },
+      ] },
       { name: 'Wind down', rounds: 1, switchRest: 0, roundRest: 0, slots: [
-        { fixed: { gym: 'box_breathing', home: 'box_breathing' }, seconds: [90, 90] },
+        { fixed: { gym: 'box_breathing', home: 'box_breathing' }, seconds: [120, 120] },
       ] },
     ],
     warmup: [],
     cooldown: [],
   },
   nightCore: {
-    dayType: 'nightCore', name: 'Night core & posture', focus: 'Easy core, glutes and upper back, then stretch', emoji: '🌙', extra: true,
+    dayType: 'nightCore', name: 'Night core & posture', focus: 'Easy core, glutes and upper back, posture work, then stretch', emoji: '🌙', extra: true,
     blocks: [
-      { name: 'Circuit', rounds: 2, switchRest: 10, roundRest: 45, slots: [
+      { name: 'Core circuit', rounds: 3, switchRest: 10, roundRest: 45, slots: [
         { pattern: 'antiExtension' },
-        { fixed: { gym: 'glute_bridge', home: 'glute_bridge' }, reps: [10, 12] },
+        { fixed: { gym: 'glute_bridge', home: 'glute_bridge' }, reps: [12, 15] },
         { pattern: 'sidePlank' },
-        { fixed: { gym: 'band_pull_apart', home: 'band_pull_apart' }, reps: [12, 15] },
-        { fixed: { gym: 'superman', home: 'superman' }, seconds: [20, 20] },
+        { fixed: { gym: 'band_pull_apart', home: 'band_pull_apart' }, reps: [15, 20] },
+        { pattern: 'plank' },
+        { fixed: { gym: 'superman', home: 'superman' }, seconds: [30, 30] },
+      ] },
+      { name: 'Posture', rounds: 2, switchRest: 5, roundRest: 30, slots: [
+        { fixed: { gym: 'band_face_pull', home: 'band_face_pull' }, reps: [12, 15] },
+        { fixed: { gym: 'thoracic_rotation', home: 'thoracic_rotation' } },
+        { fixed: { gym: 'doorway_chest_stretch', home: 'doorway_chest_stretch' } },
+        { fixed: { gym: 'cat_cow', home: 'cat_cow' } },
       ] },
       { name: 'Stretch', rounds: 1, switchRest: 5, roundRest: 0, slots: [
-        { fixed: { gym: 'child_pose', home: 'child_pose' } },
-        { fixed: { gym: 'doorway_chest_stretch', home: 'doorway_chest_stretch' } },
-        { fixed: { gym: 'box_breathing', home: 'box_breathing' } },
+        { fixed: { gym: 'child_pose', home: 'child_pose' }, seconds: [60, 60] },
+        { fixed: { gym: 'hamstring_stretch', home: 'hamstring_stretch' }, seconds: [45, 45] },
+        { fixed: { gym: 'box_breathing', home: 'box_breathing' }, seconds: [120, 120] },
       ] },
     ],
     warmup: [],
     cooldown: [],
   },
   nightWalk: {
-    dayType: 'nightWalk', name: 'Evening walk & stretch', focus: '15 min easy walk, then legs and hips stretch', emoji: '🚶', extra: true,
+    dayType: 'nightWalk', name: 'Evening walk & stretch', focus: '25 min easy walk, then a full legs and hips stretch', emoji: '🚶', extra: true,
     blocks: [
       { name: 'Walk', rounds: 1, switchRest: 0, roundRest: 30, slots: [
-        { fixed: { gym: 'brisk_walk', home: 'brisk_walk' }, seconds: [900, 900] },
+        { fixed: { gym: 'brisk_walk', home: 'brisk_walk' }, seconds: [1500, 1500] },
       ] },
       { name: 'Stretch', rounds: 1, switchRest: 5, roundRest: 0, slots: [
-        { fixed: { gym: 'calf_stretch', home: 'calf_stretch' } },
-        { fixed: { gym: 'hamstring_stretch', home: 'hamstring_stretch' } },
-        { fixed: { gym: 'hip_flexor_stretch', home: 'hip_flexor_stretch' } },
-        { fixed: { gym: 'child_pose', home: 'child_pose' } },
+        { fixed: { gym: 'calf_stretch', home: 'calf_stretch' }, seconds: [45, 45] },
+        { fixed: { gym: 'hamstring_stretch', home: 'hamstring_stretch' }, seconds: [45, 45] },
+        { fixed: { gym: 'hip_flexor_stretch', home: 'hip_flexor_stretch' }, seconds: [45, 45] },
+        { fixed: { gym: 'figure4_stretch', home: 'figure4_stretch' }, seconds: [45, 45] },
+        { fixed: { gym: 'child_pose', home: 'child_pose' }, seconds: [60, 60] },
+        { fixed: { gym: 'box_breathing', home: 'box_breathing' }, seconds: [90, 90] },
       ] },
     ],
     warmup: [],
     cooldown: [],
   },
   morningWake: {
-    dayType: 'morningWake', name: 'Morning wake-up', focus: '10 min to loosen up and switch on', emoji: '🌅', extra: true,
+    dayType: 'morningWake', name: 'Morning wake-up', focus: 'Loosen up, switch on, then an easy walk', emoji: '🌅', extra: true,
     blocks: [
-      { name: 'Wake up', rounds: 2, switchRest: 5, roundRest: 20, slots: [
+      { name: 'Wake up', rounds: 3, switchRest: 5, roundRest: 30, slots: [
         { fixed: { gym: 'cat_cow', home: 'cat_cow' }, seconds: [30, 30] },
         { fixed: { gym: 'hip_circles', home: 'hip_circles' } },
         { fixed: { gym: 'glute_bridge', home: 'glute_bridge' }, reps: [10, 12] },
@@ -268,9 +285,13 @@ export const TEMPLATES: Record<Exclude<DayType, 'rest'>, WorkoutTemplate> = {
         { fixed: { gym: 'wall_pushup', home: 'wall_pushup' }, reps: [8, 10] },
         { fixed: { gym: 'band_pull_apart', home: 'band_pull_apart' }, reps: [12, 15] },
         { fixed: { gym: 'thoracic_rotation', home: 'thoracic_rotation' } },
+        { fixed: { gym: 'worlds_greatest_stretch', home: 'worlds_greatest_stretch' } },
+      ] },
+      { name: 'Easy walk', rounds: 1, switchRest: 0, roundRest: 30, slots: [
+        { fixed: { gym: 'brisk_walk', home: 'brisk_walk' }, seconds: [600, 600] },
       ] },
       { name: 'Breathe', rounds: 1, switchRest: 0, roundRest: 0, slots: [
-        { fixed: { gym: 'box_breathing', home: 'box_breathing' } },
+        { fixed: { gym: 'box_breathing', home: 'box_breathing' }, seconds: [90, 90] },
       ] },
     ],
     warmup: [],

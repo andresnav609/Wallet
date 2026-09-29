@@ -107,10 +107,10 @@ export function Profile() {
         <ListRow label="Training time"><Segmented value={p.trainingTime ?? 'morning'} onChange={(v) => store.updateProfile({ trainingTime: v })} options={[{ value: 'morning', label: 'Morning' }, { value: 'night', label: 'Night' }, { value: 'both', label: 'Both' }]} /></ListRow>
         <div className="tiny faint" style={{ marginTop: -4, marginBottom: 6 }}>
           {(p.trainingTime ?? 'morning') === 'both'
-            ? 'Main workout in the morning plus a planned 10–20 min night routine every day.'
+            ? 'Main workout in the morning plus a planned 30 min night routine every day.'
             : (p.trainingTime ?? 'morning') === 'night'
-              ? 'Main workout at night. An optional 10 min morning wake-up is offered on Today.'
-              : 'Main workout in the morning. An optional 15 min night routine is offered on Today.'}
+              ? 'Main workout at night. An optional 30 min morning wake-up is offered on Today.'
+              : 'Main workout in the morning. An optional 30 min night routine is offered on Today.'}
         </div>
         <ListRow label="Weekly schedule" value={weekSplitOf({ profile: p }).filter((t) => t !== 'rest').length + ' days'} onClick={() => open('schedule')} />
         <ListRow label="Rest between rounds / moves" value={`${p.roundRest} s / ${p.switchRest} s`} onClick={() => open('rest')} />

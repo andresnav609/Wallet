@@ -249,7 +249,7 @@ export function Today() {
       </div>
 
       <Sheet open={changingExtra} onClose={() => setChangingExtra(false)} title={`${extraWhen}'s routine`}>
-        <p className="small muted mb12">Short companion routines. Change the default for every day in Profile → Training time.</p>
+        <p className="small muted mb12">30-minute companion routines. Change the default for every day in Profile → Training time.</p>
         <DayTypePicker value={extraType} types={EXTRA_TYPES} onChange={(t) => { store.setExtraDay(today, t); setChangingExtra(false); }} />
       </Sheet>
 
